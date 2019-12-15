@@ -16,13 +16,43 @@ val nodes : Int = 5
 val parts : Int = 2
 val scGap : Float = 0.02f
 val strokeFactor : Int = 90
-val sizeFactor : Float = 2.9f
+val sizeFactor : Float = 4.3f
 val delay : Long = 30
 val foreColor : Int = Color.parseColor("#4CAF50")
 val backColor : Int = Color.parseColor("#BDBDBD")
-val rFactor : Float = 2.9f
+
 
 fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
 fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale(i, n)) * n
 fun Float.sinify(n : Int) : Float = Math.sin(Math.PI * n.inverse() * this).toFloat()
+
+fun Canvas.drawBall(scale : Float, gap : Float, paint : Paint) {
+    val size : Float = gap / sizeFactor
+    val sf1 : Float = scale.sinify(1)
+    var sf2 : Float = scale.sinify(1)
+    if (scale > 0.5f) {
+        sf2 = 1f - sf2
+    }
+    drawCircle(gap * sf2, -gap * sf1, size, paint)
+}
+
+fun Canvas.drawTriLine(scale : Float, gap : Float, paint : Paint) {
+    val sf1 : Float = scale.divideScale(0, 2).sinify(2)
+    val sf2 : Float = scale.divideScale(1, 2).sinify(2)
+    drawLine(0f, 0f, (gap / 2) * sf1, -gap * sf1, paint)
+    drawLine(gap / 2, -gap, gap / 2 + (gap / 2) * sf2, -gap + gap * sf2, paint)
+}
+
+fun Canvas.drawBUBNode(i : Int, scale : Float, curr : Boolean, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    val gap : Float = w / (nodes + 1)
+    save()
+    translate(gap * (i + 1), h / 2)
+    drawTriLine(scale, gap, paint)
+    if (curr) {
+        drawBall(scale, gap, paint)
+    }
+    restore()
+}
