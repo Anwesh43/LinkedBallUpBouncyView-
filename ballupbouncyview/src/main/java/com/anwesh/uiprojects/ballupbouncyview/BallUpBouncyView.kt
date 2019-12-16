@@ -209,4 +209,13 @@ class BallUpBouncyView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity) : BallUpBouncyView {
+            val view : BallUpBouncyView = BallUpBouncyView(activity)
+            activity.setContentView(view)
+            return view
+        }
+    }
 }
