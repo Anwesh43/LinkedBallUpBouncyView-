@@ -11,6 +11,7 @@ import android.app.Activity
 import android.graphics.Paint
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Path
 
 val nodes : Int = 5
 val parts : Int = 2
@@ -30,24 +31,30 @@ fun Float.sinify(n : Int) : Float = Math.sin(Math.PI * n.inverse() * this).toFlo
 fun Canvas.drawBall(scale : Float, gap : Float, paint : Paint) {
     val size : Float = gap / sizeFactor
     val sf1 : Float = scale.sinify(1)
-    var sf2 : Float = scale.sinify(1)
-    if (scale > 0.5f) {
-        sf2 = 1f - sf2
-    }
-    drawCircle(gap * sf2, -gap * sf1, size, paint)
+    drawCircle(gap * scale, -gap * sf1, size, paint)
 }
 
 fun Canvas.drawTriLine(scale : Float, gap : Float, paint : Paint) {
-    val sf1 : Float = scale.divideScale(0, 2).sinify(2)
-    val sf2 : Float = scale.divideScale(1, 2).sinify(2)
-    drawLine(0f, 0f, (gap / 2) * sf1, -gap * sf1, paint)
-    drawLine(gap / 2, -gap, gap / 2 + (gap / 2) * sf2, -gap + gap * sf2, paint)
+    val sf1 : Float = scale.sinify(1)
+    val sc1 : Float = scale.divideScale(0, 2)
+    val sc2 : Float = scale.divideScale(1, 2)
+    var y1 : Float = -gap * scale.sinify(1)
+    var y2 : Float = 0f
+    if (scale > 0.5f) {
+        y1 = -gap
+        y2 = gap - gap * scale.sinify(1)
+    }
+    drawLine(0f, 0f, (gap / 2) * sc1, y1, paint)
+    drawLine(gap / 2, -gap, gap / 2 + (gap / 2) * sc2, -gap + y2, paint)
 }
 
 fun Canvas.drawBUBNode(i : Int, scale : Float, curr : Boolean, paint : Paint) {
     val w : Float = width.toFloat()
     val h : Float = height.toFloat()
     val gap : Float = w / (nodes + 1)
+    paint.color = foreColor
+    paint.strokeCap = Paint.Cap.ROUND
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
     save()
     translate(gap * (i + 1), h / 2)
     drawTriLine(scale, gap, paint)
