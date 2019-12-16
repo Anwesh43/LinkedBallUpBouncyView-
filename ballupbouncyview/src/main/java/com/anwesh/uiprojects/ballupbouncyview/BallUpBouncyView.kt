@@ -186,4 +186,26 @@ class BallUpBouncyView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : BallUpBouncyView) {
+
+        private val animator : Animator = Animator(view)
+        private var bub : BallUpBouncy = BallUpBouncy(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(backColor)
+            bub.draw(canvas, paint)
+            animator.animate {
+                bub.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            bub.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
