@@ -121,4 +121,46 @@ class BallUpBouncyView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    data class BUBNode(var i : Int, val state : State = State()) {
+
+        private var next : BUBNode? = null
+        private var prev : BUBNode? = null
+
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < nodes - 1) {
+                next = BUBNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        fun draw(canvas : Canvas, currI : Int, paint : Paint) {
+            canvas.drawBUBNode(i, state.scale, currI == i, paint)
+            prev?.draw(canvas, currI, paint)
+        }
+
+        fun update(cb : (Float) -> Unit) {
+            state.update(cb)
+        }
+
+        fun startUpdating(cb : () -> Unit) {
+            state.startUpdating(cb)
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : BUBNode {
+            var curr : BUBNode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this
+        }
+    }
 }
